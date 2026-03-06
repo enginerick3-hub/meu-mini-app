@@ -3,65 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YNW ENGINE | TERMINAL</title>
+    <title>YNW ENGINE | LIQUID GLASS</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --primary-color: #ff3c3c; /* Cor padrão: Vermelho */
+            --bg-image: url('https://w0.peakpx.com/wallpaper/594/405/HD-wallpaper-dark-abstract-darkness-smoke.jpg');
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
         body {
-            background-color: #000;
-            color: #0f0; /* Verde Neon */
-            font-family: 'Courier New', Courier, monospace;
+            background-color: #050505;
+            background-image: var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: 0.5s ease;
+        }
+
+        /* Container Principal Vidro */
+        .app-container {
+            width: 95%;
+            max-width: 1000px;
+            height: 90vh;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Stats Bar */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 15px;
             text-align: center;
-            padding: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
-        .container {
-            border: 1px solid #0f0;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px #0f0;
+
+        .stat-box span { display: block; font-size: 10px; color: #aaa; text-transform: uppercase; }
+        .stat-box h2 { font-size: 24px; color: var(--primary-color); text-shadow: 0 0 10px var(--primary-color); }
+
+        /* Terminais de Texto */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            flex-grow: 1;
         }
-        h1 { font-size: 20px; text-transform: uppercase; }
-        .status { margin: 20px 0; color: #fff; }
-        button {
-            background: transparent;
-            color: #0f0;
-            border: 1px solid #0f0;
-            padding: 10px 20px;
+
+        textarea, .output {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            color: #fff;
+            resize: none;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            overflow-y: auto;
+        }
+
+        /* Controles Laterais */
+        .side-menu {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .menu-left { left: -50px; }
+        .menu-right { right: -50px; }
+
+        .btn-toggle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 16px;
+            border: 2px solid rgba(255,255,255,0.2);
             transition: 0.3s;
         }
-        button:hover {
-            background: #0f0;
-            color: #000;
+
+        /* Botões de Ação */
+        .controls { display: flex; gap: 10px; }
+        button.action-btn {
+            flex-grow: 1;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            text-transform: uppercase;
         }
+
+        button.action-btn:hover {
+            background: var(--primary-color);
+            color: #000;
+            box-shadow: 0 0 20px var(--primary-color);
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🟢 YNW ENGINE V24.1</h1>
-        <p>CONSOLE DE OPERAÇÕES ATIVO</p>
-        
-        <div class="status" id="user-info">
-            Carregando dados do operador...
+
+    <div class="app-container">
+        <div class="side-menu menu-left">
+            <div class="btn-toggle" style="background: #ff3c3c;" onclick="changeTheme('#ff3c3c')"></div>
+            <div class="btn-toggle" style="background: #00ff88;" onclick="changeTheme('#00ff88')"></div>
+            <div class="btn-toggle" style="background: #a33cff;" onclick="changeTheme('#a33cff')"></div>
         </div>
 
-        <button onclick="fecharApp()">ENCERRAR SESSÃO</button>
+        <div class="side-menu menu-right">
+            <div class="btn-toggle" style="background: #222;" onclick="changeBg(1)"></div>
+            <div class="btn-toggle" style="background: #444;" onclick="changeBg(2)"></div>
+            <div class="btn-toggle" style="background: #666;" onclick="changeBg(3)"></div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box"><span>Aprovados</span><h2 id="count-live">0</h2></div>
+            <div class="stat-box"><span>Reprovados</span><h2 id="count-die" style="text-shadow: none; color: #fff;">0</h2></div>
+            <div class="stat-box"><span>Testados</span><h2 id="count-total">0</h2></div>
+        </div>
+
+        <div class="main-content">
+            <textarea placeholder="Insira os dados aqui..."></textarea>
+            <div class="output" id="output-log">Aguardando início...</div>
+        </div>
+
+        <div class="controls">
+            <button class="action-btn" onclick="iniciar()">▷ INICIAR</button>
+            <button class="action-btn" style="border-color: #555; color: #555;" onclick="parar()">▢ PARAR</button>
+        </div>
     </div>
 
     <script>
-        // Inicializa o Mini App
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Abre o app em tela cheia
+        tg.expand();
 
-        // Mostra o nome do usuário do Telegram no site
-        const user = tg.initDataUnsafe.user;
-        if (user) {
-            document.getElementById('user-info').innerHTML = 
-                `OPERADOR: ${user.first_name} (@${user.username})<br>STATUS: AUTORIZADO`;
+        function changeTheme(color) {
+            document.documentElement.style.setProperty('--primary-color', color);
+            tg.HapticFeedback.impactOccurred('medium');
         }
 
-        function fecharApp() {
-            tg.close(); // Fecha o Mini App
+        function changeBg(num) {
+            const bgs = [
+                'url("https://w0.peakpx.com/wallpaper/594/405/HD-wallpaper-dark-abstract-darkness-smoke.jpg")',
+                'url("https://images.wallpapersden.com/image/download/dark-background-abstract-4k_bGdpa2aUmZqaraWkpJRmbmdlrWZlbWU.jpg")',
+                'url("https://wallpaperaccess.com/full/1162354.jpg")'
+            ];
+            document.documentElement.style.setProperty('--bg-image', bgs[num-1]);
+            tg.HapticFeedback.impactOccurred('light');
+        }
+
+        function iniciar() {
+            document.getElementById('output-log').innerHTML += "<br>> Iniciando varredura...";
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        function parar() {
+            document.getElementById('output-log').innerHTML += "<br>> Operação interrompida.";
         }
     </script>
 </body>
