@@ -7,203 +7,183 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --primary-color: #ff3c3c; /* Vermelho Padrão */
-            --bg-image: url('https://w0.peakpx.com/wallpaper/594/405/HD-wallpaper-dark-abstract-darkness-smoke.jpg');
+            --glow: #ff3c3c; /* Cor padrão */
+            --bg: url('imagem1.jpg'); /* Foto padrão */
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
         body {
-            background-color: #050505;
-            background-image: var(--bg-image);
+            background: #000;
+            background-image: var(--bg);
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
             transition: 0.5s ease;
         }
 
-        /* Container Principal Vidro */
-        .app-container {
+        /* Container Liquid Glass */
+        .glass-panel {
             width: 95%;
-            max-width: 1100px;
             height: 90vh;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            padding: 25px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-            position: relative;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Navegação por Abas */
-        .nav-tabs {
-            display: flex;
-            justify-content: space-around;
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .tab-item {
-            color: #888;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: bold;
-            text-transform: uppercase;
-            padding: 8px 15px;
-            transition: 0.3s;
-            border-radius: 10px;
-        }
-
-        .tab-item.active {
-            color: var(--primary-color);
-            background: rgba(255,255,255,0.05);
-            text-shadow: 0 0 10px var(--primary-color);
-        }
-
-        /* Seções de Conteúdo */
-        .content-section {
-            display: none;
             flex-direction: column;
             gap: 15px;
-            flex-grow: 1;
-            animation: fadeIn 0.5s ease;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            position: relative;
         }
 
-        .content-section.active { display: flex; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Header Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            cursor: pointer;
         }
 
-        /* Inputs e Terminais */
-        .glass-input {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 12px;
-            padding: 12px;
-            color: #fff;
-            width: 100%;
-            outline: none;
-            font-size: 14px;
+            padding: 15px;
+            text-align: center;
+            transition: 0.3s;
         }
 
-        .terminal-log {
-            background: rgba(0,0,0,0.6);
+        .stat-card:hover { border-color: var(--glow); background: rgba(255,255,255,0.05); }
+        .stat-card span { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card h2 { font-size: 28px; color: var(--glow); text-shadow: 0 0 10px var(--glow); }
+
+        /* Terminais */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            flex-grow: 1;
+        }
+
+        textarea, .terminal {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 15px;
             padding: 15px;
-            color: #0f0;
+            color: #fff;
             font-family: 'Consolas', monospace;
-            font-size: 12px;
-            flex-grow: 1;
+            font-size: 11px;
+            resize: none;
             overflow-y: auto;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
 
-        /* Botões de Cores e Fundo (Laterais) */
-        .side-panel {
+        /* Menus Laterais Flutuantes */
+        .side-bar {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
             gap: 15px;
-            padding: 12px;
-            background: rgba(255,255,255,0.02);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            z-index: 100;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 50px;
         }
 
-        .panel-left { left: -55px; }
-        .panel-right { right: -55px; }
+        .bar-left { left: -45px; }
+        .bar-right { right: -45px; }
 
-        .circle-btn {
-            width: 32px;
-            height: 32px;
+        .dot {
+            width: 25px;
+            height: 25px;
             border-radius: 50%;
             cursor: pointer;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.1);
             transition: 0.3s;
         }
 
-        /* Botão de Ação Neon */
-        .neon-btn {
-            padding: 15px;
+        .img-dot {
+            width: 35px;
+            height: 35px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Botoes Inferiores */
+        .footer-btns { display: flex; gap: 10px; }
+        .btn-action {
+            flex: 1;
+            padding: 14px;
             background: transparent;
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-            border-radius: 12px;
+            border: 1px solid var(--glow);
+            color: var(--glow);
+            border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.4s;
+            transition: 0.3s;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        .neon-btn:hover {
-            background: var(--primary-color);
-            color: #000;
-            box-shadow: 0 0 30px var(--primary-color);
-        }
+        .btn-action:hover { background: var(--glow); color: #000; box-shadow: 0 0 20px var(--glow); }
 
+        /* Menu de Opções Oculto */
+        #tools-menu {
+            display: none;
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            background: rgba(15, 15, 15, 0.95);
+            border: 1px solid var(--glow);
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 999;
+            box-shadow: 0 0 30px #000;
+        }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <div class="side-panel panel-left">
-            <div class="circle-btn" style="background: #ff3c3c;" onclick="setTheme('#ff3c3c')"></div>
-            <div class="circle-btn" style="background: #00ff88;" onclick="setTheme('#00ff88')"></div>
-            <div class="circle-btn" style="background: #a33cff;" onclick="setTheme('#a33cff')"></div>
+    <div class="glass-panel">
+        <div class="side-bar bar-left">
+            <div class="dot" style="background: #ff3c3c;" onclick="setTheme('#ff3c3c')"></div>
+            <div class="dot" style="background: #00ff88;" onclick="setTheme('#00ff88')"></div>
+            <div class="dot" style="background: #a33cff;" onclick="setTheme('#a33cff')"></div>
         </div>
 
-        <div class="side-panel panel-right">
-            <div class="circle-btn" style="background: #222;" onclick="setBg(1)"></div>
-            <div class="circle-btn" style="background: #444;" onclick="setBg(2)"></div>
-            <div class="circle-btn" style="background: #666;" onclick="setBg(3)"></div>
+        <div class="side-bar bar-right">
+            <div class="dot img-dot" style="background-image: url('imagem1.jpg');" onclick="setBg(1)"></div>
+            <div class="dot img-dot" style="background-image: url('imagem2.jpg');" onclick="setBg(2)"></div>
+            <div class="dot img-dot" style="background-image: url('imagem3.jpg');" onclick="setBg(3)"></div>
         </div>
 
-        <div class="nav-tabs">
-            <div class="tab-item active" id="tab-radar" onclick="showTab('radar')">📡 Radar</div>
-            <div class="tab-item" id="tab-forense" onclick="showTab('forense')">🕵️ Forense</div>
-            <div class="tab-item" id="tab-history" onclick="showTab('history')">📜 Database</div>
+        <div class="stats-container" onclick="toggleTools()">
+            <div class="stat-card"><span>Aprovados</span><h2 id="live">0</h2></div>
+            <div class="stat-card"><span>Reprovados</span><h2 id="die" style="color:#fff; text-shadow:none;">0</h2></div>
+            <div class="stat-card"><span>Testados</span><h2 id="total">0</h2></div>
         </div>
 
-        <div class="content-section active" id="radar-section">
-            <input type="text" class="glass-input" id="radar-product" placeholder="Nome do Produto...">
-            <input type="text" class="glass-input" id="radar-gate" placeholder="Gateway (Ex: Stripe, MP)...">
-            <button class="neon-btn" onclick="startRadar()">▷ Iniciar Varredura</button>
-            <div class="terminal-log" id="radar-log">Console do Radar pronto...</div>
+        <div id="tools-menu">
+            <p style="color:var(--glow); margin-bottom:10px;">FERRAMENTAS DISPONÍVEIS:</p>
+            <button class="btn-action" style="margin-bottom:10px;" onclick="alert('Iniciando Busca...')">📡 BUSCAR SITES</button>
+            <button class="btn-action" onclick="toggleTools()">Fechar</button>
         </div>
 
-        <div class="content-section" id="forense-section">
-            <input type="text" class="glass-input" id="forense-url" placeholder="Cole a URL do checkout aqui...">
-            <button class="neon-btn" onclick="startForense()">🕵️ Analisar Camadas</button>
-            <div class="terminal-log" id="forense-log" style="color: #fff;">Aguardando alvo para perícia...</div>
+        <div class="main-grid">
+            <textarea placeholder="cc|mes|ano|cvv"></textarea>
+            <div class="terminal" id="log">Aguardando comando...</div>
         </div>
 
-        <div class="content-section" id="history-section">
-            <div class="terminal-log" id="history-log" style="color: #aaa;">
-                Capturando base de dados local...<br>
-                > Stripe: 25 sites<br>
-                > Mercado Pago: 14 sites<br>
-                > Appmax: 9 sites
-            </div>
-            <button class="neon-btn" style="border-color: #555; color: #555;">Sincronizar com Nuvem</button>
+        <div class="footer-btns">
+            <button class="btn-action" onclick="iniciar()">▷ INICIAR</button>
+            <button class="btn-action" style="border-color:#444; color:#444;">▢ PARAR</button>
         </div>
     </div>
 
@@ -212,48 +192,24 @@
         tg.expand();
 
         function setTheme(color) {
-            document.documentElement.style.setProperty('--primary-color', color);
+            document.documentElement.style.setProperty('--glow', color);
             tg.HapticFeedback.impactOccurred('medium');
         }
 
         function setBg(num) {
-            const bgs = [
-                'url("https://w0.peakpx.com/wallpaper/594/405/HD-wallpaper-dark-abstract-darkness-smoke.jpg")',
-                'url("https://images.wallpapersden.com/image/download/dark-background-abstract-4k_bGdpa2aUmZqaraWkpJRmbmdlrWZlbWU.jpg")',
-                'url("https://wallpaperaccess.com/full/1162354.jpg")'
-            ];
-            document.documentElement.style.setProperty('--bg-image', bgs[num-1]);
+            document.documentElement.style.setProperty('--bg', `url('imagem${num}.jpg')`);
             tg.HapticFeedback.impactOccurred('light');
         }
 
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            
-            document.getElementById('tab-' + tabName).classList.add('active');
-            document.getElementById(tabName + '-section').classList.add('active');
+        function toggleTools() {
+            const menu = document.getElementById('tools-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
             tg.HapticFeedback.impactOccurred('soft');
         }
 
-        function startRadar() {
-            const prod = document.getElementById('radar-product').value;
-            const log = document.getElementById('radar-log');
-            if(!prod) return alert("Insira um produto!");
-            
-            log.innerHTML += `<br>> Buscando sites para: ${prod.toUpperCase()}...`;
+        function iniciar() {
+            document.getElementById('log').innerHTML += "<br>> Varredura iniciada...";
             tg.HapticFeedback.notificationOccurred('success');
-        }
-
-        function startForense() {
-            const url = document.getElementById('forense-url').value;
-            const log = document.getElementById('forense-log');
-            if(!url) return alert("Insira uma URL!");
-
-            log.innerHTML = `> ANALISANDO CAMADA 1: Scripts<br>> ANALISANDO CAMADA 2: Metadados...`;
-            setTimeout(() => {
-                log.innerHTML += `<br>> GATE DETECTADA: [Pagar.me]`;
-                tg.HapticFeedback.notificationOccurred('warning');
-            }, 2000);
         }
     </script>
 </body>
