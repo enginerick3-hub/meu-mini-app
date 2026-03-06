@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YNW ENGINE | TERMINAL</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: #000;
+            color: #0f0; /* Verde Neon */
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #0f0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #0f0;
+        }
+        h1 { font-size: 20px; text-transform: uppercase; }
+        .status { margin: 20px 0; color: #fff; }
+        button {
+            background: transparent;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #0f0;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🟢 YNW ENGINE V24.1</h1>
+        <p>CONSOLE DE OPERAÇÕES ATIVO</p>
+        
+        <div class="status" id="user-info">
+            Carregando dados do operador...
+        </div>
+
+        <button onclick="fecharApp()">ENCERRAR SESSÃO</button>
+    </div>
+
+    <script>
+        // Inicializa o Mini App
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Abre o app em tela cheia
+
+        // Mostra o nome do usuário do Telegram no site
+        const user = tg.initDataUnsafe.user;
+        if (user) {
+            document.getElementById('user-info').innerHTML = 
+                `OPERADOR: ${user.first_name} (@${user.username})<br>STATUS: AUTORIZADO`;
+        }
+
+        function fecharApp() {
+            tg.close(); // Fecha o Mini App
+        }
+    </script>
+</body>
+</html>
