@@ -7,11 +7,11 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --primary-color: #ff3c3c; /* Cor padrão: Vermelho */
+            --primary-color: #ff3c3c; /* Vermelho Padrão */
             --bg-image: url('https://w0.peakpx.com/wallpaper/594/405/HD-wallpaper-dark-abstract-darkness-smoke.jpg');
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
         body {
             background-color: #050505;
@@ -30,105 +30,134 @@
         /* Container Principal Vidro */
         .app-container {
             width: 95%;
-            max-width: 1000px;
+            max-width: 1100px;
             height: 90vh;
             background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            padding: 20px;
+            border-radius: 30px;
+            padding: 25px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
             position: relative;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
-        /* Stats Bar */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-        }
-
-        .stat-box {
-            background: rgba(0, 0, 0, 0.4);
+        /* Navegação por Abas */
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
             border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            border-bottom: 2px solid var(--primary-color);
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .stat-box span { display: block; font-size: 10px; color: #aaa; text-transform: uppercase; }
-        .stat-box h2 { font-size: 24px; color: var(--primary-color); text-shadow: 0 0 10px var(--primary-color); }
+        .tab-item {
+            color: #888;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 8px 15px;
+            transition: 0.3s;
+            border-radius: 10px;
+        }
 
-        /* Terminais de Texto */
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        .tab-item.active {
+            color: var(--primary-color);
+            background: rgba(255,255,255,0.05);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        /* Seções de Conteúdo */
+        .content-section {
+            display: none;
+            flex-direction: column;
             gap: 15px;
             flex-grow: 1;
+            animation: fadeIn 0.5s ease;
         }
 
-        textarea, .output {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .content-section.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Inputs e Terminais */
+        .glass-input {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 12px;
+            color: #fff;
+            width: 100%;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .terminal-log {
+            background: rgba(0,0,0,0.6);
             border-radius: 15px;
             padding: 15px;
-            color: #fff;
-            resize: none;
+            color: #0f0;
             font-family: 'Consolas', monospace;
             font-size: 12px;
+            flex-grow: 1;
             overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
 
-        /* Controles Laterais */
-        .side-menu {
+        /* Botões de Cores e Fundo (Laterais) */
+        .side-panel {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
             gap: 15px;
-            padding: 10px;
-            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            background: rgba(255,255,255,0.02);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             border: 1px solid rgba(255,255,255,0.1);
+            z-index: 100;
         }
 
-        .menu-left { left: -50px; }
-        .menu-right { right: -50px; }
+        .panel-left { left: -55px; }
+        .panel-right { right: -55px; }
 
-        .btn-toggle {
-            width: 30px;
-            height: 30px;
+        .circle-btn {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid rgba(255,255,255,0.2);
             transition: 0.3s;
         }
 
-        /* Botões de Ação */
-        .controls { display: flex; gap: 10px; }
-        button.action-btn {
-            flex-grow: 1;
-            padding: 12px;
+        /* Botão de Ação Neon */
+        .neon-btn {
+            padding: 15px;
             background: transparent;
             border: 1px solid var(--primary-color);
             color: var(--primary-color);
-            border-radius: 10px;
-            cursor: pointer;
+            border-radius: 12px;
             font-weight: bold;
-            transition: 0.3s;
+            cursor: pointer;
+            transition: 0.4s;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        button.action-btn:hover {
+        .neon-btn:hover {
             background: var(--primary-color);
             color: #000;
-            box-shadow: 0 0 20px var(--primary-color);
+            box-shadow: 0 0 30px var(--primary-color);
         }
 
     </style>
@@ -136,32 +165,45 @@
 <body>
 
     <div class="app-container">
-        <div class="side-menu menu-left">
-            <div class="btn-toggle" style="background: #ff3c3c;" onclick="changeTheme('#ff3c3c')"></div>
-            <div class="btn-toggle" style="background: #00ff88;" onclick="changeTheme('#00ff88')"></div>
-            <div class="btn-toggle" style="background: #a33cff;" onclick="changeTheme('#a33cff')"></div>
+        <div class="side-panel panel-left">
+            <div class="circle-btn" style="background: #ff3c3c;" onclick="setTheme('#ff3c3c')"></div>
+            <div class="circle-btn" style="background: #00ff88;" onclick="setTheme('#00ff88')"></div>
+            <div class="circle-btn" style="background: #a33cff;" onclick="setTheme('#a33cff')"></div>
         </div>
 
-        <div class="side-menu menu-right">
-            <div class="btn-toggle" style="background: #222;" onclick="changeBg(1)"></div>
-            <div class="btn-toggle" style="background: #444;" onclick="changeBg(2)"></div>
-            <div class="btn-toggle" style="background: #666;" onclick="changeBg(3)"></div>
+        <div class="side-panel panel-right">
+            <div class="circle-btn" style="background: #222;" onclick="setBg(1)"></div>
+            <div class="circle-btn" style="background: #444;" onclick="setBg(2)"></div>
+            <div class="circle-btn" style="background: #666;" onclick="setBg(3)"></div>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-box"><span>Aprovados</span><h2 id="count-live">0</h2></div>
-            <div class="stat-box"><span>Reprovados</span><h2 id="count-die" style="text-shadow: none; color: #fff;">0</h2></div>
-            <div class="stat-box"><span>Testados</span><h2 id="count-total">0</h2></div>
+        <div class="nav-tabs">
+            <div class="tab-item active" id="tab-radar" onclick="showTab('radar')">📡 Radar</div>
+            <div class="tab-item" id="tab-forense" onclick="showTab('forense')">🕵️ Forense</div>
+            <div class="tab-item" id="tab-history" onclick="showTab('history')">📜 Database</div>
         </div>
 
-        <div class="main-content">
-            <textarea placeholder="Insira os dados aqui..."></textarea>
-            <div class="output" id="output-log">Aguardando início...</div>
+        <div class="content-section active" id="radar-section">
+            <input type="text" class="glass-input" id="radar-product" placeholder="Nome do Produto...">
+            <input type="text" class="glass-input" id="radar-gate" placeholder="Gateway (Ex: Stripe, MP)...">
+            <button class="neon-btn" onclick="startRadar()">▷ Iniciar Varredura</button>
+            <div class="terminal-log" id="radar-log">Console do Radar pronto...</div>
         </div>
 
-        <div class="controls">
-            <button class="action-btn" onclick="iniciar()">▷ INICIAR</button>
-            <button class="action-btn" style="border-color: #555; color: #555;" onclick="parar()">▢ PARAR</button>
+        <div class="content-section" id="forense-section">
+            <input type="text" class="glass-input" id="forense-url" placeholder="Cole a URL do checkout aqui...">
+            <button class="neon-btn" onclick="startForense()">🕵️ Analisar Camadas</button>
+            <div class="terminal-log" id="forense-log" style="color: #fff;">Aguardando alvo para perícia...</div>
+        </div>
+
+        <div class="content-section" id="history-section">
+            <div class="terminal-log" id="history-log" style="color: #aaa;">
+                Capturando base de dados local...<br>
+                > Stripe: 25 sites<br>
+                > Mercado Pago: 14 sites<br>
+                > Appmax: 9 sites
+            </div>
+            <button class="neon-btn" style="border-color: #555; color: #555;">Sincronizar com Nuvem</button>
         </div>
     </div>
 
@@ -169,12 +211,12 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function changeTheme(color) {
+        function setTheme(color) {
             document.documentElement.style.setProperty('--primary-color', color);
             tg.HapticFeedback.impactOccurred('medium');
         }
 
-        function changeBg(num) {
+        function setBg(num) {
             const bgs = [
                 'url("https://w0.peakpx.com/wallpaper/594/405/HD-wallpaper-dark-abstract-darkness-smoke.jpg")',
                 'url("https://images.wallpapersden.com/image/download/dark-background-abstract-4k_bGdpa2aUmZqaraWkpJRmbmdlrWZlbWU.jpg")',
@@ -184,13 +226,34 @@
             tg.HapticFeedback.impactOccurred('light');
         }
 
-        function iniciar() {
-            document.getElementById('output-log').innerHTML += "<br>> Iniciando varredura...";
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById(tabName + '-section').classList.add('active');
+            tg.HapticFeedback.impactOccurred('soft');
+        }
+
+        function startRadar() {
+            const prod = document.getElementById('radar-product').value;
+            const log = document.getElementById('radar-log');
+            if(!prod) return alert("Insira um produto!");
+            
+            log.innerHTML += `<br>> Buscando sites para: ${prod.toUpperCase()}...`;
             tg.HapticFeedback.notificationOccurred('success');
         }
 
-        function parar() {
-            document.getElementById('output-log').innerHTML += "<br>> Operação interrompida.";
+        function startForense() {
+            const url = document.getElementById('forense-url').value;
+            const log = document.getElementById('forense-log');
+            if(!url) return alert("Insira uma URL!");
+
+            log.innerHTML = `> ANALISANDO CAMADA 1: Scripts<br>> ANALISANDO CAMADA 2: Metadados...`;
+            setTimeout(() => {
+                log.innerHTML += `<br>> GATE DETECTADA: [Pagar.me]`;
+                tg.HapticFeedback.notificationOccurred('warning');
+            }, 2000);
         }
     </script>
 </body>
