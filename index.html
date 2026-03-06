@@ -1,214 +1,171 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YNW ENGINE | LIQUID GLASS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YNW ENGINE | CENTRAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --glow: #ff3c3c; /* Cor padrão */
-            --bg: url('imagem1.jpg'); /* Foto padrão */
+            --theme-color: #00ff88; 
+            --theme-rgb: 0, 255, 136;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-
-        body {
-            background: #000;
-            background-image: var(--bg);
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: 0.5s ease;
+        * { font-family: 'Inter', sans-serif; transition: all 0.3s ease; }
+        body { background: #030303; min-height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        
+        .bg-image-blur {
+            position: fixed; inset: -5%; width: 110%; height: 110%;
+            background-image: url('imagem1.jpg'); 
+            background-size: cover; background-position: center;
+            filter: brightness(0.2) blur(10px);
+            z-index: 0; pointer-events: none;
         }
 
+        .bg-grid {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 50px 50px; position: fixed; inset: 0; z-index: 1;
+            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+        }
+        
+        .glow-orb { position: fixed; width: 500px; height: 500px; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: 1; }
+        .orb-1 { background: var(--theme-color); top: -100px; right: -50px; animation: orb-float 10s infinite; }
+        @keyframes orb-float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, -20px); } }
+        
         /* Container Liquid Glass */
-        .glass-panel {
-            width: 95%;
-            height: 90vh;
-            background: rgba(10, 10, 10, 0.7);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            position: relative;
-        }
-
-        /* Header Stats */
-        .stats-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            cursor: pointer;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            transition: 0.3s;
-        }
-
-        .stat-card:hover { border-color: var(--glow); background: rgba(255,255,255,0.05); }
-        .stat-card span { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-card h2 { font-size: 28px; color: var(--glow); text-shadow: 0 0 10px var(--glow); }
-
-        /* Terminais */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            flex-grow: 1;
-        }
-
-        textarea, .terminal {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 15px;
-            color: #fff;
-            font-family: 'Consolas', monospace;
-            font-size: 11px;
-            resize: none;
-            overflow-y: auto;
+        .liquid-glass { 
+            background: rgba(10, 10, 10, 0.2); 
+            backdrop-filter: blur(25px) saturate(160%);
+            -webkit-backdrop-filter: blur(25px) saturate(160%);
+            border: 1px solid rgba(var(--theme-rgb), 0.2); 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), 0 0 30px rgba(var(--theme-rgb), 0.15); 
+            border-radius: 2rem;
         }
 
         /* Menus Laterais Flutuantes */
-        .side-bar {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 50px;
+        .side-menu {
+            position: fixed; top: 50%; transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 15px;
+            padding: 12px; background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(10px); border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.05); z-index: 100;
         }
-
-        .bar-left { left: -45px; }
-        .bar-right { right: -45px; }
+        .menu-left { left: 15px; }
+        .menu-right { right: 15px; }
 
         .dot {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            cursor: pointer;
+            width: 35px; height: 35px; border-radius: 50%; cursor: pointer;
             border: 2px solid rgba(255,255,255,0.1);
-            transition: 0.3s;
+        }
+        .dot:hover { border-color: #fff; transform: scale(1.1); }
+        .dot.active { border-color: #fff; box-shadow: 0 0 15px var(--theme-color); }
+
+        /* Botões de Comando */
+        .cmd-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(var(--theme-rgb), 0.1);
+            border-radius: 1.2rem;
+            padding: 18px 25px;
+            display: flex; align-items: center; gap: 15px;
+            cursor: pointer; width: 100%;
+        }
+        .cmd-btn:hover {
+            background: rgba(var(--theme-rgb), 0.08);
+            border-color: rgba(var(--theme-rgb), 0.5);
+            box-shadow: 0 0 20px rgba(var(--theme-rgb), 0.2);
+            transform: translateY(-3px);
         }
 
-        .img-dot {
-            width: 35px;
-            height: 35px;
-            background-size: cover;
-            background-position: center;
-        }
-
-        /* Botoes Inferiores */
-        .footer-btns { display: flex; gap: 10px; }
-        .btn-action {
-            flex: 1;
-            padding: 14px;
-            background: transparent;
-            border: 1px solid var(--glow);
-            color: var(--glow);
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-
-        .btn-action:hover { background: var(--glow); color: #000; box-shadow: 0 0 20px var(--glow); }
-
-        /* Menu de Opções Oculto */
-        #tools-menu {
-            display: none;
-            position: absolute;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            background: rgba(15, 15, 15, 0.95);
-            border: 1px solid var(--glow);
-            border-radius: 15px;
-            padding: 20px;
-            z-index: 999;
-            box-shadow: 0 0 30px #000;
+        .terminal {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            color: #0f0;
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            flex-grow: 1;
+            overflow-y: auto;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
     </style>
 </head>
-<body>
+<body class="text-white">
+    <div id="main-bg" class="bg-image-blur"></div>
+    <div class="bg-grid"></div>
+    <div class="glow-orb orb-1"></div>
 
-    <div class="glass-panel">
-        <div class="side-bar bar-left">
-            <div class="dot" style="background: #ff3c3c;" onclick="setTheme('#ff3c3c')"></div>
-            <div class="dot" style="background: #00ff88;" onclick="setTheme('#00ff88')"></div>
-            <div class="dot" style="background: #a33cff;" onclick="setTheme('#a33cff')"></div>
-        </div>
-
-        <div class="side-bar bar-right">
-            <div class="dot img-dot" style="background-image: url('imagem1.jpg');" onclick="setBg(1)"></div>
-            <div class="dot img-dot" style="background-image: url('imagem2.jpg');" onclick="setBg(2)"></div>
-            <div class="dot img-dot" style="background-image: url('imagem3.jpg');" onclick="setBg(3)"></div>
-        </div>
-
-        <div class="stats-container" onclick="toggleTools()">
-            <div class="stat-card"><span>Aprovados</span><h2 id="live">0</h2></div>
-            <div class="stat-card"><span>Reprovados</span><h2 id="die" style="color:#fff; text-shadow:none;">0</h2></div>
-            <div class="stat-card"><span>Testados</span><h2 id="total">0</h2></div>
-        </div>
-
-        <div id="tools-menu">
-            <p style="color:var(--glow); margin-bottom:10px;">FERRAMENTAS DISPONÍVEIS:</p>
-            <button class="btn-action" style="margin-bottom:10px;" onclick="alert('Iniciando Busca...')">📡 BUSCAR SITES</button>
-            <button class="btn-action" onclick="toggleTools()">Fechar</button>
-        </div>
-
-        <div class="main-grid">
-            <textarea placeholder="cc|mes|ano|cvv"></textarea>
-            <div class="terminal" id="log">Aguardando comando...</div>
-        </div>
-
-        <div class="footer-btns">
-            <button class="btn-action" onclick="iniciar()">▷ INICIAR</button>
-            <button class="btn-action" style="border-color:#444; color:#444;">▢ PARAR</button>
-        </div>
+    <div class="side-menu menu-left">
+        <div class="dot active" style="background: #00ff88;" onclick="mudarTema('#00ff88', this)"></div>
+        <div class="dot" style="background: #ef4444;" onclick="mudarTema('#ef4444', this)"></div>
+        <div class="dot" style="background: #a855f7;" onclick="mudarTema('#a855f7', this)"></div>
     </div>
 
+    <div class="side-menu menu-right">
+        <div class="dot" style="background-image: url('imagem1.jpg'); background-size: cover;" onclick="mudarFundo('imagem1.jpg', this)"></div>
+        <div class="dot" style="background-image: url('imagem2.jpg'); background-size: cover;" onclick="mudarFundo('imagem2.jpg', this)"></div>
+        <div class="dot" style="background-image: url('imagem3.jpg'); background-size: cover;" onclick="mudarFundo('imagem3.jpg', this)"></div>
+    </div>
+
+    <main class="relative z-10 w-[90%] max-w-[500px] h-[85vh] flex flex-col gap-5">
+        <div class="liquid-glass p-8 flex flex-col gap-6 flex-1">
+            <div class="text-center">
+                <h1 class="text-2xl font-black italic tracking-tighter" style="color: var(--theme-color); text-shadow: 0 0 10px var(--theme-color);">YNW ENGINE</h1>
+                <p class="text-[10px] uppercase tracking-[0.3em] text-neutral-500 font-bold">Terminal de Controle Central</p>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <div class="cmd-btn" onclick="execCmd('BUSCAR SITES')">
+                    <i data-lucide="satellite" style="color: var(--theme-color);"></i>
+                    <span class="text-xs font-bold uppercase tracking-widest">Buscar Novos Sites</span>
+                </div>
+                <div class="cmd-btn" onclick="execCmd('IDENTIFICAR GATE')">
+                    <i data-lucide="shield-check" style="color: var(--theme-color);"></i>
+                    <span class="text-xs font-bold uppercase tracking-widest">Identificar Gateway</span>
+                </div>
+                <div class="cmd-btn" onclick="execCmd('HISTORICO')">
+                    <i data-lucide="database" style="color: var(--theme-color);"></i>
+                    <span class="text-xs font-bold uppercase tracking-widest">Consultar Database</span>
+                </div>
+            </div>
+
+            <div id="log" class="terminal">
+                > Operador autorizado.<br>
+                > Sistema carregado com sucesso...
+            </div>
+        </div>
+    </main>
+
     <script>
+        lucide.createIcons();
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function setTheme(color) {
-            document.documentElement.style.setProperty('--glow', color);
+        function mudarTema(cor, btn) {
+            document.documentElement.style.setProperty('--theme-color', cor);
+            // Extrai RGB para as bordas e glow
+            const r = parseInt(cor.slice(1, 3), 16), g = parseInt(cor.slice(3, 5), 16), b = parseInt(cor.slice(5, 7), 16);
+            document.documentElement.style.setProperty('--theme-rgb', `${r}, ${g}, ${b}`);
+            
+            document.querySelectorAll('.menu-left .dot').forEach(d => d.classList.remove('active'));
+            btn.classList.add('active');
             tg.HapticFeedback.impactOccurred('medium');
         }
 
-        function setBg(num) {
-            document.documentElement.style.setProperty('--bg', `url('imagem${num}.jpg')`);
+        function mudarFundo(img, btn) {
+            document.getElementById('main-bg').style.backgroundImage = `url('${img}')`;
+            document.querySelectorAll('.menu-right .dot').forEach(d => d.classList.remove('active'));
+            btn.classList.add('active');
             tg.HapticFeedback.impactOccurred('light');
         }
 
-        function toggleTools() {
-            const menu = document.getElementById('tools-menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-            tg.HapticFeedback.impactOccurred('soft');
-        }
-
-        function iniciar() {
-            document.getElementById('log').innerHTML += "<br>> Varredura iniciada...";
+        function execCmd(cmd) {
+            const log = document.getElementById('log');
+            log.innerHTML += `<br>> Iniciando módulo: <span style="color: var(--theme-color)">${cmd}</span>`;
+            log.scrollTop = log.scrollHeight;
             tg.HapticFeedback.notificationOccurred('success');
         }
     </script>
