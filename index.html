@@ -3,218 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YNW ENGINE | CENTRAL</title>
+    <title>YNW ENGINE | LIQUID</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --theme-color: #00ff88; 
-            --theme-rgb: 0, 255, 136;
+            --theme-color: #ef4444; /* Vermelho padrão da foto */
+            --theme-rgb: 239, 68, 68;
         }
 
-        * { font-family: 'Inter', sans-serif; transition: all 0.3s ease; }
-        body { background: #030303; min-height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        * { font-family: 'Inter', sans-serif; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { background: #030303; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
         
-        .bg-image-blur {
-            position: fixed; inset: -5%; width: 110%; height: 110%;
-            background-image: url('imagem1.jpg'); 
-            background-size: cover; background-position: center;
-            filter: brightness(0.3) blur(5px); /* Blur reduzido conforme pedido */
-            z-index: 0; pointer-events: none;
+        /* Fundo com Blur sutil da foto */
+        .bg-blur {
+            position: fixed; inset: 0;
+            background: url('imagem1.jpg') center/cover no-repeat;
+            filter: brightness(0.2) blur(5px);
+            z-index: 0;
         }
 
-        .bg-grid {
-            background-image: linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
-            background-size: 50px 50px; position: fixed; inset: 0; z-index: 1;
-        }
-        
-        /* Container Liquid Glass - Blur Suave */
-        .liquid-glass { 
-            background: rgba(10, 10, 10, 0.4); 
-            backdrop-filter: blur(8px) saturate(140%); /* Blur suave */
-            -webkit-backdrop-filter: blur(8px) saturate(140%);
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), 0 0 20px rgba(var(--theme-rgb), 0.1); 
-            border-radius: 2rem;
+        /* Container Principal Liquid Glass */
+        .glass-container {
+            position: relative; z-index: 10;
+            width: 92%; height: 85vh;
+            background: rgba(10, 10, 10, 0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(var(--theme-rgb), 0.15);
+            border-radius: 2.5rem;
+            padding: 25px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.7), 0 0 20px rgba(var(--theme-rgb), 0.1);
+            display: flex; flex-direction: column; gap: 20px;
         }
 
-        /* Menus Laterais */
-        .side-menu {
-            position: fixed; top: 50%; transform: translateY(-50%);
-            display: flex; flex-direction: column; gap: 15px;
-            padding: 10px; background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(5px); border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.05); z-index: 100;
+        /* Menus Expansíveis (Estilo image_f94e56) */
+        .expand-menu {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1.5rem;
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .menu-left { left: 15px; }
-        .menu-right { right: 15px; }
+        .expand-menu:hover { border-color: var(--theme-color); background: rgba(var(--theme-rgb), 0.05); }
+        .expand-content { display: none; padding-top: 15px; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .dot { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.1); }
+        /* Botão OK (Estilo 'INICIAR' da foto image_fabdfd) */
+        .btn-ok {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--theme-color);
+            color: var(--theme-color);
+            border-radius: 99px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-ok:hover { 
+            background: var(--theme-color); 
+            color: #000; 
+            box-shadow: 0 0 25px var(--theme-color); 
+        }
+
+        /* Seletores Circulares Laterais */
+        .side-ctrl { position: absolute; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 15px; }
+        .side-left { left: -45px; }
+        .side-right { right: -45px; }
+        .dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.1); }
         .dot.active { border-color: #fff; box-shadow: 0 0 15px var(--theme-color); }
 
-        /* Botões de Comando */
-        .cmd-btn {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(var(--theme-rgb), 0.15);
-            border-radius: 1.2rem;
-            padding: 16px 20px;
-            display: flex; align-items: center; gap: 15px;
-            cursor: pointer; width: 100%;
-        }
-        .cmd-btn:hover {
-            background: rgba(var(--theme-rgb), 0.1);
-            border-color: var(--theme-color);
-            box-shadow: 0 0 20px rgba(var(--theme-rgb), 0.2);
-            transform: scale(1.02);
-        }
-
-        /* Inputs de Dados */
-        .glass-input {
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(var(--theme-rgb), 0.3);
-            border-radius: 1rem;
-            padding: 12px 15px;
-            color: #fff; width: 100%; outline: none;
-            font-size: 13px; margin-bottom: 10px;
-        }
-
+        /* Terminal Estilo Console Hacker */
         .terminal {
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 1.2rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            color: var(--theme-color);
-            font-family: 'Consolas', monospace;
-            font-size: 11px; flex-grow: 1;
-            overflow-y: auto;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+            flex-grow: 1; background: rgba(0, 0, 0, 0.6);
+            border-radius: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 15px; color: var(--theme-color);
+            font-family: 'Consolas', monospace; font-size: 11px;
+            overflow-y: auto; box-shadow: inset 0 0 20px #000;
         }
-
-        .hidden { display: none; }
     </style>
 </head>
 <body class="text-white">
-    <div id="main-bg" class="bg-image-blur"></div>
-    <div class="bg-grid"></div>
+    <div id="bg" class="bg-blur"></div>
 
-    <div class="side-menu menu-left">
-        <div class="dot active" style="background: #00ff88;" onclick="mudarTema('#00ff88', this)"></div>
-        <div class="dot" style="background: #ef4444;" onclick="mudarTema('#ef4444', this)"></div>
-        <div class="dot" style="background: #a855f7;" onclick="mudarTema('#a855f7', this)"></div>
-    </div>
-
-    <div class="side-menu menu-right">
-        <div class="dot" style="background-image: url('imagem1.jpg'); background-size: cover;" onclick="mudarFundo('imagem1.jpg', this)"></div>
-        <div class="dot" style="background-image: url('imagem2.jpg'); background-size: cover;" onclick="mudarFundo('imagem2.jpg', this)"></div>
-        <div class="dot" style="background-image: url('imagem3.jpg'); background-size: cover;" onclick="mudarFundo('imagem3.jpg', this)"></div>
-    </div>
-
-    <main class="relative z-10 w-[92%] max-w-[450px] h-[85vh] flex flex-col gap-4">
-        <div class="liquid-glass p-6 flex flex-col gap-5 flex-1">
-            <div class="text-center">
-                <h1 class="text-xl font-black italic tracking-tighter" style="color: var(--theme-color); text-shadow: 0 0 10px var(--theme-color);">YNW ENGINE</h1>
-                <p class="text-[9px] uppercase tracking-[0.3em] text-neutral-400 font-bold">Terminal Central V3.0</p>
-            </div>
-
-            <div id="main-menu" class="flex flex-col gap-3">
-                <div class="cmd-btn" onclick="openTool('radar')">
-                    <i data-lucide="satellite" style="color: var(--theme-color);"></i>
-                    <span class="text-xs font-bold uppercase tracking-widest">Buscar Novos Sites</span>
-                </div>
-                <div class="cmd-btn" onclick="openTool('forense')">
-                    <i data-lucide="shield-check" style="color: var(--theme-color);"></i>
-                    <span class="text-xs font-bold uppercase tracking-widest">Identificar Gateway</span>
-                </div>
-                <div class="cmd-btn" onclick="execSimpleCmd('HISTORICO')">
-                    <i data-lucide="database" style="color: var(--theme-color);"></i>
-                    <span class="text-xs font-bold uppercase tracking-widest">Consultar Database</span>
-                </div>
-            </div>
-
-            <div id="tool-form" class="hidden flex flex-col">
-                <p id="form-title" class="text-[10px] uppercase font-bold mb-3 opacity-60"></p>
-                <input type="text" id="input-primary" class="glass-input" placeholder="">
-                <input type="text" id="input-secondary" class="glass-input hidden" placeholder="">
-                <div class="flex gap-2">
-                    <button class="flex-1 py-3 rounded-xl font-bold text-xs uppercase" style="background: var(--theme-color); color: #000;" onclick="submitData()">Confirmar</button>
-                    <button class="px-4 rounded-xl border border-white/10 text-xs" onclick="closeTool()">Voltar</button>
-                </div>
-            </div>
-
-            <div id="log" class="terminal">> Operador autorizado...</div>
+    <div class="glass-container">
+        <div class="side-ctrl side-left">
+            <div class="dot active" style="background: #ef4444;" onclick="mudarTema('#ef4444', this)"></div>
+            <div class="dot" style="background: #10b981;" onclick="mudarTema('#10b981', this)"></div>
+            <div class="dot" style="background: #a855f7;" onclick="mudarTema('#a855f7', this)"></div>
         </div>
-    </main>
+
+        <div class="side-ctrl side-right">
+            <div class="dot" style="background-image: url('imagem1.jpg'); background-size: cover;" onclick="mudarFundo('imagem1.jpg', this)"></div>
+            <div class="dot" style="background-image: url('imagem2.jpg'); background-size: cover;" onclick="mudarFundo('imagem2.jpg', this)"></div>
+            <div class="dot" style="background-image: url('imagem3.jpg'); background-size: cover;" onclick="mudarFundo('imagem3.jpg', this)"></div>
+        </div>
+
+        <div class="flex justify-between items-center px-2">
+            <div>
+                <h1 class="text-xl font-black italic tracking-tighter" style="color: var(--theme-color); text-shadow: 0 0 10px var(--theme-color);">YNW ENGINE</h1>
+                <p class="text-[9px] uppercase tracking-widest text-neutral-500 font-bold">Terminal Central V32.0</p>
+            </div>
+            <div class="bg-white/5 px-4 py-1.5 rounded-full border border-white/5 flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-[10px] uppercase font-bold text-neutral-400">Online</span>
+            </div>
+        </div>
+
+        <div class="expand-menu" onclick="toggleMenu('func-list')">
+            <div class="flex items-center gap-3">
+                <i data-lucide="layers" class="w-4 h-4" style="color: var(--theme-color);"></i>
+                <span class="text-xs font-bold uppercase tracking-widest">Módulos do Sistema</span>
+            </div>
+            <i data-lucide="chevron-down" id="arrow" class="w-4 h-4"></i>
+        </div>
+
+        <div id="func-list" class="expand-content">
+            <div class="grid grid-cols-1 gap-3">
+                <button class="bg-white/5 p-4 rounded-xl text-left text-[11px] font-bold uppercase tracking-widest border border-white/5 hover:border-white/20" onclick="selecionar('BUSCAR SITES')">📡 Buscar Novos Sites</button>
+                <button class="bg-white/5 p-4 rounded-xl text-left text-[11px] font-bold uppercase tracking-widest border border-white/5 hover:border-white/20" onclick="selecionar('IDENTIFICAR GATE')">🕵️ Identificar Gateway</button>
+                <button class="bg-white/5 p-4 rounded-xl text-left text-[11px] font-bold uppercase tracking-widest border border-white/5 hover:border-white/20" onclick="selecionar('HISTORICO')">📜 Consultar Database</button>
+            </div>
+        </div>
+
+        <div id="action-area" class="flex flex-col gap-3">
+            <input type="text" id="main-input" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-xs outline-none focus:border-[var(--theme-color)]" placeholder="Digite o comando ou alvo...">
+            <button class="btn-ok" onclick="confirmar()">OK <i data-lucide="play" class="w-4 h-4"></i></button>
+        </div>
+
+        <div id="terminal" class="terminal">
+            > Sistema Operacional YNW Iniciado...<br>
+            > Aguardando seleção de módulo operacional...
+        </div>
+    </div>
 
     <script>
         lucide.createIcons();
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let currentModule = "";
+        let moduloAtivo = "";
+
+        function toggleMenu(id) {
+            const el = document.getElementById(id);
+            const arrow = document.getElementById('arrow');
+            const isOpen = el.style.display === 'block';
+            el.style.display = isOpen ? 'none' : 'block';
+            arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+            tg.HapticFeedback.impactOccurred('soft');
+        }
 
         function mudarTema(cor, btn) {
             document.documentElement.style.setProperty('--theme-color', cor);
             const r = parseInt(cor.slice(1, 3), 16), g = parseInt(cor.slice(3, 5), 16), b = parseInt(cor.slice(5, 7), 16);
             document.documentElement.style.setProperty('--theme-rgb', `${r}, ${g}, ${b}`);
-            document.querySelectorAll('.menu-left .dot').forEach(d => d.classList.remove('active'));
+            document.querySelectorAll('.side-left .dot').forEach(d => d.classList.remove('active'));
             btn.classList.add('active');
             tg.HapticFeedback.impactOccurred('medium');
         }
 
         function mudarFundo(img, btn) {
-            document.getElementById('main-bg').style.backgroundImage = `url('${img}')`;
-            document.querySelectorAll('.menu-right .dot').forEach(d => d.classList.remove('active'));
+            document.getElementById('bg').style.backgroundImage = `url('${img}')`;
+            document.querySelectorAll('.side-right .dot').forEach(d => d.classList.remove('active'));
             btn.classList.add('active');
             tg.HapticFeedback.impactOccurred('light');
         }
 
-        function openTool(module) {
-            currentModule = module;
-            document.getElementById('main-menu').classList.add('hidden');
-            document.getElementById('tool-form').classList.remove('hidden');
-            
-            const p1 = document.getElementById('input-primary');
-            const p2 = document.getElementById('input-secondary');
-            
-            if(module === 'radar') {
-                document.getElementById('form-title').innerText = "Configurar Varredura";
-                p1.placeholder = "Nome do Produto";
-                p2.placeholder = "Gateway (Stripe, MP...)";
-                p2.classList.remove('hidden');
-            } else {
-                document.getElementById('form-title').innerText = "Análise Forense";
-                p1.placeholder = "Cole a URL do checkout";
-                p2.classList.add('hidden');
-            }
-            tg.HapticFeedback.impactOccurred('soft');
+        function selecionar(nome) {
+            moduloAtivo = nome;
+            document.getElementById('terminal').innerHTML += `<br>> Módulo selecionado: ${nome}`;
+            toggleMenu('func-list');
         }
 
-        function closeTool() {
-            document.getElementById('main-menu').classList.remove('hidden');
-            document.getElementById('tool-form').classList.add('hidden');
-        }
-
-        function submitData() {
-            const data1 = document.getElementById('input-primary').value;
-            const data2 = document.getElementById('input-secondary').value;
+        function confirmar() {
+            const val = document.getElementById('main-input').value;
+            if(!moduloAtivo) return alert("Selecione um módulo primeiro!");
+            if(!val) return alert("Preencha o campo!");
             
-            if(!data1) return alert("Preencha os campos!");
-            
-            const command = currentModule === 'radar' ? `VARREDURA:${data1}:${data2}` : `IDENTIFICAR:${data1}`;
-            
-            // Envia os dados para o bot.py processar
-            tg.sendData(command); 
-            
-            document.getElementById('log').innerHTML += `<br>> Comando enviado: ${command}`;
-            closeTool();
-            tg.HapticFeedback.notificationOccurred('success');
-        }
-
-        function execSimpleCmd(cmd) {
-            tg.sendData(cmd);
-            document.getElementById('log').innerHTML += `<br>> Solicitando: ${cmd}`;
+            const cmd = `${moduloAtivo}:${val}`;
+            tg.sendData(cmd); // Envia para o bot Python
+            document.getElementById('terminal').innerHTML += `<br>> Comando enviado: ${cmd}`;
             tg.HapticFeedback.notificationOccurred('success');
         }
     </script>
