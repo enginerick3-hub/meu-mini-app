@@ -16,7 +16,6 @@
         * { font-family: 'Inter', sans-serif; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         body { background: #030303; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
         
-        /* Fundo Liquid Glass */
         .bg-blur {
             position: fixed; inset: 0;
             background: url('imagem1.jpg') center/cover no-repeat;
@@ -36,7 +35,6 @@
             display: flex; flex-direction: column; gap: 12px;
         }
 
-        /* Estilo image_f94e56 - Menus Expansíveis */
         .expand-menu {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -50,7 +48,6 @@
         .expand-content { display: none; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 1rem; margin-top: 5px; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Estilo image_fabdfd - Botoes e Inputs */
         .dot { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.1); }
         .dot.active { border-color: #fff; box-shadow: 0 0 15px var(--theme-color); }
 
@@ -92,7 +89,7 @@
         <div class="flex justify-between items-center px-2 mb-1">
             <div>
                 <h1 class="text-xl font-black italic tracking-tighter" style="color: var(--theme-color); text-shadow: 0 0 10px var(--theme-color);">YNW ENGINE</h1>
-                <p class="text-[8px] uppercase tracking-widest text-neutral-500 font-bold">Terminal Liquid Glass V35.0</p>
+                <p class="text-[8px] uppercase tracking-widest text-neutral-500 font-bold">Terminal Liquid Glass V36.0</p>
             </div>
             <div class="bg-white/5 px-3 py-1 rounded-full border border-white/5 flex items-center gap-2">
                 <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
@@ -111,7 +108,11 @@
             <button id="btn-radar" class="tool-btn-small" onclick="selectModule('radar')">📡 BUSCAR NOVOS SITES</button>
             <button id="btn-gate" class="tool-btn-small" onclick="selectModule('gate')">🕵️ IDENTIFICAR GATEWAY</button>
             
-            <input type="text" id="input-alvo" class="glass-input mt-3" placeholder="Selecione um módulo...">
+            <div id="inputs-container" class="mt-3">
+                <input type="text" id="input-prod" class="glass-input" placeholder="Selecione um módulo...">
+                <input type="text" id="input-gate" class="glass-input hidden" placeholder="Gateway (Stripe, Pagarme...)">
+            </div>
+            
             <button class="btn-ok-liquid" onclick="dispararComando()">OK / EXECUTAR</button>
         </div>
 
@@ -135,7 +136,7 @@
                 <div class="dot" style="background-image: url('imagem2.jpg'); background-size: cover;" onclick="mudarFundo('imagem2.jpg', this)"></div>
                 <div class="dot" style="background-image: url('imagem3.jpg'); background-size: cover;" onclick="mudarFundo('imagem3.jpg', this)"></div>
             </div>
-            <button class="btn-ok-liquid" onclick="toggleMenu('menu-personalizar')">CONFIRMAR AJUSTES</button>
+            <button class="btn-ok-liquid" onclick="toggleMenu('menu-personalizar')">SALVAR TEMA</button>
         </div>
 
         <div id="terminal" class="terminal">> Aguardando comando operacional...</div>
@@ -159,22 +160,37 @@
             document.querySelectorAll('.tool-btn-small').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-' + mod).classList.add('active');
             
-            // Ajuste de placeholder simplificado
-            document.getElementById('input-alvo').placeholder = mod === 'radar' ? 'Nome do Produto...' : 'URL do Site...';
+            const inputProd = document.getElementById('input-prod');
+            const inputGate = document.getElementById('input-gate');
+
+            if(mod === 'radar') {
+                inputProd.placeholder = "Produto (Ex: Tenis)";
+                inputGate.classList.remove('hidden'); // Mostra campo Gateway
+            } else {
+                inputProd.placeholder = "URL do Site...";
+                inputGate.classList.add('hidden'); // Esconde campo Gateway
+            }
             tg.HapticFeedback.impactOccurred('medium');
         }
 
         function dispararComando() {
-            const alvo = document.getElementById('input-alvo').value;
+            const prod = document.getElementById('input-prod').value;
+            const gate = document.getElementById('input-gate').value;
+            
             if(!currentModule) return alert("Selecione um módulo!");
-            if(!alvo) return alert("Insira o nome ou URL!");
+            if(!prod) return alert("Preencha os campos!");
 
-            // Envia apenas o nome no caso da varredura, a gate é injetada automaticamente
-            const cmd = currentModule === 'radar' ? `VARREDURA:${alvo}:STRIPE` : `IDENTIFICAR:${alvo}`;
+            // Formata o comando para o bot.py processar
+            let cmd = "";
+            if(currentModule === 'radar') {
+                cmd = `VARREDURA:${prod}:${gate || 'STRIPE'}`;
+            } else {
+                cmd = `IDENTIFICAR:${prod}`;
+            }
             
-            tg.sendData(cmd); 
+            tg.sendData(cmd); // Envia ao Python
             
-            document.getElementById('terminal').innerHTML += `<br>> Executando ${currentModule}: ${alvo}`;
+            document.getElementById('terminal').innerHTML += `<br>> Executando ${currentModule}: ${prod}`;
             toggleMenu('menu-ferramentas');
             tg.HapticFeedback.notificationOccurred('success');
         }
