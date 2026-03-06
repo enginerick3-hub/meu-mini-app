@@ -16,10 +16,11 @@
         * { font-family: 'Inter', sans-serif; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         body { background: #030303; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
         
+        /* Fundo Liquid Glass */
         .bg-blur {
             position: fixed; inset: 0;
             background: url('imagem1.jpg') center/cover no-repeat;
-            filter: brightness(0.2) blur(2px);
+            filter: brightness(0.2) blur(8px);
             z-index: 0;
         }
 
@@ -91,7 +92,7 @@
         <div class="flex justify-between items-center px-2 mb-1">
             <div>
                 <h1 class="text-xl font-black italic tracking-tighter" style="color: var(--theme-color); text-shadow: 0 0 10px var(--theme-color);">YNW ENGINE</h1>
-                <p class="text-[8px] uppercase tracking-widest text-neutral-500 font-bold">Terminal Liquid Glass V34.0</p>
+                <p class="text-[8px] uppercase tracking-widest text-neutral-500 font-bold">Terminal Liquid Glass V35.0</p>
             </div>
             <div class="bg-white/5 px-3 py-1 rounded-full border border-white/5 flex items-center gap-2">
                 <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
@@ -110,7 +111,7 @@
             <button id="btn-radar" class="tool-btn-small" onclick="selectModule('radar')">📡 BUSCAR NOVOS SITES</button>
             <button id="btn-gate" class="tool-btn-small" onclick="selectModule('gate')">🕵️ IDENTIFICAR GATEWAY</button>
             
-            <input type="text" id="input-alvo" class="glass-input mt-3" placeholder="Aguardando seleção...">
+            <input type="text" id="input-alvo" class="glass-input mt-3" placeholder="Selecione um módulo...">
             <button class="btn-ok-liquid" onclick="dispararComando()">OK / EXECUTAR</button>
         </div>
 
@@ -122,22 +123,22 @@
             <i data-lucide="chevron-down" class="w-4 h-4 opacity-40"></i>
         </div>
         <div id="menu-personalizar" class="expand-content">
-            <p class="text-[9px] mb-2 opacity-50">ESCOLHER TEMA:</p>
+            <p class="text-[9px] mb-2 opacity-50 uppercase">Mudar Cor:</p>
             <div class="flex justify-around mb-4">
                 <div class="dot" style="background: #ef4444;" onclick="mudarTema('#ef4444', this)"></div>
                 <div class="dot" style="background: #10b981;" onclick="mudarTema('#10b981', this)"></div>
                 <div class="dot" style="background: #a855f7;" onclick="mudarTema('#a855f7', this)"></div>
             </div>
-            <p class="text-[9px] mb-2 opacity-50">ESCOLHER FUNDO:</p>
+            <p class="text-[9px] mb-2 opacity-50 uppercase">Mudar Fundo:</p>
             <div class="flex justify-around mb-4">
                 <div class="dot" style="background-image: url('imagem1.jpg'); background-size: cover;" onclick="mudarFundo('imagem1.jpg', this)"></div>
                 <div class="dot" style="background-image: url('imagem2.jpg'); background-size: cover;" onclick="mudarFundo('imagem2.jpg', this)"></div>
                 <div class="dot" style="background-image: url('imagem3.jpg'); background-size: cover;" onclick="mudarFundo('imagem3.jpg', this)"></div>
             </div>
-            <button class="btn-ok-liquid" onclick="toggleMenu('menu-personalizar')">SALVAR AJUSTES</button>
+            <button class="btn-ok-liquid" onclick="toggleMenu('menu-personalizar')">CONFIRMAR AJUSTES</button>
         </div>
 
-        <div id="terminal" class="terminal">> Console Sincronizado V34.0...</div>
+        <div id="terminal" class="terminal">> Aguardando comando operacional...</div>
     </div>
 
     <script>
@@ -157,21 +158,23 @@
             currentModule = mod;
             document.querySelectorAll('.tool-btn-small').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-' + mod).classList.add('active');
-            document.getElementById('input-alvo').placeholder = mod === 'radar' ? 'Nome do Produto...' : 'URL do Checkout...';
+            
+            // Ajuste de placeholder simplificado
+            document.getElementById('input-alvo').placeholder = mod === 'radar' ? 'Nome do Produto...' : 'URL do Site...';
             tg.HapticFeedback.impactOccurred('medium');
         }
 
         function dispararComando() {
             const alvo = document.getElementById('input-alvo').value;
             if(!currentModule) return alert("Selecione um módulo!");
-            if(!alvo) return alert("Preencha o campo!");
+            if(!alvo) return alert("Insira o nome ou URL!");
 
+            // Envia apenas o nome no caso da varredura, a gate é injetada automaticamente
             const cmd = currentModule === 'radar' ? `VARREDURA:${alvo}:STRIPE` : `IDENTIFICAR:${alvo}`;
             
-            // CONEXÃO COM BOT PYTHON
             tg.sendData(cmd); 
             
-            document.getElementById('terminal').innerHTML += `<br>> Comando enviado: ${cmd}`;
+            document.getElementById('terminal').innerHTML += `<br>> Executando ${currentModule}: ${alvo}`;
             toggleMenu('menu-ferramentas');
             tg.HapticFeedback.notificationOccurred('success');
         }
